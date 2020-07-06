@@ -1,0 +1,22 @@
+---
+title: "Introduction to Machine Learning"
+author: "Sajini Arumugam"
+date: "6/25/2020"
+output: html_document
+weight: 2
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+Q1: True or False: A key feature of machine learning is that the algorithms are built with data.
+
+TRUE
+
+Q2: True or False: In machine learning, we build algorithms that take feature values (X) and train a model using known outcomes (Y) that is then used to predict outcomes when presented with features without known outcomes.
+
+TRUE
+

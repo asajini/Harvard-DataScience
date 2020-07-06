@@ -1,0 +1,205 @@
+---
+title: "6.1 - MNIST - Case Study"
+author: "Sajini Arumugam"
+output: html_document
+weight: 2
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+<br/>
+
+
+### **Comprehension Check: Dimension Reduction**  
+
+#### **Question 1**  
+We want to explore the tissue_gene_expression predictors by plotting them.
+```{r}
+library(dslabs)
+data("tissue_gene_expression")
+dim(tissue_gene_expression$x)
+```
+
+We want to get an idea of which observations are close to each other, but, as you can see from the dimensions, the predictors are 500-dimensional, making plotting difficult. Plot the first two principal components with color representing tissue type.
+
+Which tissue is in a cluster by itself?
+```{r}
+library(dplyr)
+library(ggplot2)
+pc <-prcomp(tissue_gene_expression$x)
+
+data.frame(pc_1 = pc$x[,1], pc_2 = pc$x[,2], 
+           tissue = tissue_gene_expression$y) %>%
+  ggplot(aes(pc_1, pc_2, color = tissue)) +
+  geom_point()
+```
+<br/>
+
+#### **Question 2** 
+The predictors for each observation are measured using the same device and experimental procedure. This introduces biases that can affect all the predictors from one observation. For each observation, compute the average across all predictors, and then plot this against the first PC with color representing tissue. Report the correlation.
+
+What is the correlation?
+```{r}
+pc_avg <- rowMeans(tissue_gene_expression$x)
+
+data.frame(pc_1 <- pc$x[,1], pc_avg,
+                   tissue=tissue_gene_expression$y) %>%
+  ggplot(aes(pc_1, pc_avg, color = tissue))+
+  geom_point()
+cor(pc_avg, pc$x[,1])
+```
+<br/>
+
+#### **Question 3**  
+We see an association with the first PC and the observation averages. Redo the PCA but only after removing the center. Part of the code is provided for you.
+
+```{r}
+x <- with(tissue_gene_expression, sweep(x, 1, rowMeans(x)))
+pc <- prcomp(x)
+data.frame(pc_1 = pc$x[,1], pc_2 = pc$x[,2], 
+	   tissue = tissue_gene_expression$y) %>%
+	   ggplot(aes(pc_1, pc_2, color = tissue)) +
+	   geom_point()
+```
+
+```
+x <- with(tissue_gene_expression, sweep(x, 1, rowMeans(x)))
+```
+<br/>
+
+#### **Question 4**  
+For the first 10 PCs, make a boxplot showing the values for each tissue.
+
+For the 7th PC, which two tissues have the greatest median difference?
+
+```{r}
+for(i in 1:10) {
+  boxplot(pc$x[,i]~tissue_gene_expression$y,main = paste("PC", i))}
+#or 
+data.frame(pc$x[,1:7], tissue = tissue_gene_expression$y) %>% select(PC7,tissue) %>% group_by(tissue) %>% summarise(m = abs(median(PC7))) %>% arrange(desc(m))
+```
+<br/>
+
+#### **Question 5**  
+Plot the percent variance explained by PC number. Hint: use the summary function.
+
+How many PCs are required to reach a cumulative percent variance explained greater than 50%?
+
+```{r}
+plot(summary(pc)$importance[3,]) 
+```
+***
+### **Comprehension Check: Ensembles**  
+For these exercises we are going to build several machine learning models for the mnist_27 dataset and then build an ensemble. Each of the exercises in this comprehension check builds on the last.
+
+#### **Question 1**  
+Use the training set to build a model with several of the models available from the caret package. We will test out 10 of the most common machine learning models in this exercise:
+```{r}
+models <- c("glm", "lda", "naive_bayes", "svmLinear", "knn", "gamLoess", "multinom", "qda", "rf", "adaboost")
+```
+
+Apply all of these models using train() with all the default parameters. You may need to install some packages. Keep in mind that you will probably get some warnings. Also, it will probably take a while to train all of the models - be patient!
+
+Run the following code to train the various models:
+
+```{r}
+library(caret)
+library(dslabs)
+set.seed(1) # use `set.seed(1, sample.kind = "Rounding")` in R 3.6 or later
+data("mnist_27")
+
+fits <- lapply(models, function(model){ 
+	print(model)
+	train(y ~ ., method = model, data = mnist_27$train)
+}) 
+    
+names(fits) <- models
+```
+<br/>
+
+####  **Question 2**  
+Now that you have all the trained models in a list, use sapply() or map() to create a matrix of predictions for the test set. You should end up with a matrix with length(mnist_27$test$y) rows and length(models) columns.
+
+What are the dimensions of the matrix of predictions?
+
+Number of rows & columns:
+
+```{r}
+pred <- sapply(fits, function(object) 
+    predict(object, newdata = mnist_27$test))
+  class(pred)
+  dim(pred)
+```
+<br/>
+
+#### **Question 3**  
+Now compute accuracy for each model on the test set.
+
+Report the mean accuracy across all models.
+```{r}
+ acc <- colMeans(pred == mnist_27$test$y)
+  mean(acc)
+```
+<br/>
+
+#### **Question 4**  
+Next, build an ensemble prediction by majority vote and compute the accuracy of the ensemble. Vote 7 if more than 50% of the models are predicting a 7, and 2 otherwise.
+
+What is the accuracy of the ensemble?
+```{r}
+ vote <- rowMeans(pred == 7)
+  y_hat <- ifelse(vote >0.5, "7","2")
+  mean(y_hat == mnist_27$test$y)
+```
+<br/>
+
+#### **Question 5**  
+n Q3, we computed the accuracy of each method on the test set and noticed that the individual accuracies varied.
+
+How many of the individual methods do better than the ensemble?
+
+```{r}
+j <- acc >  mean(y_hat == mnist_27$test$y)
+  sum(j)
+  models[j]
+```
+<br/>
+
+#### **Question 6**  
+It is tempting to remove the methods that do not perform well and re-do the ensemble. The problem with this approach is that we are using the test data to make a decision. However, we could use the minimum accuracy estimates obtained from cross validation with the training data for each model. Obtain these estimates and save them in an object. Report the mean of these training set accuracy estimates.
+
+What is the mean of these training set accuracy estimates?
+```{r}
+mean(fits[[1]]$results$Accuracy) +
+    mean(fits[[2]]$results$Accuracy) +
+    mean(fits[[3]]$results$Accuracy) +
+    mean(fits[[4]]$results$Accuracy) +
+    mean(fits[[5]]$results$Accuracy) +
+    mean(fits[[6]]$results$Accuracy) +
+    mean(fits[[7]]$results$Accuracy) +
+    mean(fits[[8]]$results$Accuracy) +
+    mean(fits[[9]]$results$Accuracy) +
+    mean(fits[[10]]$results$Accuracy) 
+  acc_yhat <- sapply(fits,function(fit) min(fit$results$Accuracy))
+  acc_yhat
+  mean(acc_yhat)
+```
+<br/>
+
+#### **Question 7**  
+Now let's only consider the methods with an estimated accuracy of greater than or equal to 0.8 when constructing the ensemble.
+
+What is the accuracy of the ensemble now?
+```{r}
+ind <- acc_yhat > 0.8
+  ind
+```
+
+
+
+
+
+
+
+

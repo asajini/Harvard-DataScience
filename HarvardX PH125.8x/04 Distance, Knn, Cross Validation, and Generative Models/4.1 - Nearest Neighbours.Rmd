@@ -1,0 +1,143 @@
+---
+title: "4.1 - Nearest Neighbours"
+author: "Sajini Arumugam"
+output: html_document
+weight: 2
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+Most clustering and machine learning techniques rely on being able to define distance between observations, using features or predictors.
+With high dimensional data, a quick way to compute all the distances at once is to use the function dist(), which computes the distance between each row and produces an object of class dist():
+
+### **Comprehension Check: Distance**
+
+#### **Question 1**  
+Load the following dataset:
+
+```{r}
+library(dslabs)
+data(tissue_gene_expression)
+```
+This dataset includes a matrix x:
+```{r}
+dim(tissue_gene_expression$x)
+```
+This matrix has the gene expression levels of 500 genes from 189 biological samples representing seven different tissues. The tissue type is stored in y:
+```{r}
+table(tissue_gene_expression$y)
+```
+Which of the following lines of code computes the Euclidean distance between each observation and stores it in the object d?
+
+- d <- dist(tissue_gene_expression$x,distance='maximum')
+ 
+- d <- dist(tissue_gene_expression)
+ 
+- d <- dist(tissue_gene_expression$x)         [*]
+ 
+- d <- cor(tissue_gene_expression$x)
+
+```{r}
+d <- dist(tissue_gene_expression$x) 
+```
+
+
+#### **Question 2**  
+Using the dataset from Q1, compare the distances between observations 1 and 2 (both cerebellum), observations 39 and 40 (both colon), and observations 73 and 74 (both endometrium).
+
+Distance-wise, are samples from tissues of the same type closer to each other?
+
+- No, the samples from the same tissue type are not necessarily closer.
+- The two colon samples are closest to each other, but the samples from the other two tissues are not.
+- The two cerebellum samples are closest to each other, but the samples from the other two tissues are not.
+- Yes, the samples from the same tissue type are closest to each other.        [*]
+
+#### **Question 3**  
+Make a plot of all the distances using the image() function to see if the pattern you observed in Q2 is general.
+
+Which code would correctly make the desired plot?
+
+```{r}
+image(as.matrix(d))
+```
+***
+
+## **KNN**
+
+K-nearest neighbors (kNN) estimates the conditional probabilities in a similar way to bin smoothing. However, kNN is easier to adapt to multiple dimensions.
+Using kNN, for any point  (x1,x2)  for which we want an estimate of  p(x1,x2) , we look for the k nearest points to  (x1,x2)  and take an average of the 0s and 1s associated with these points. We refer to the set of points used to compute the average as the neighborhood. Larger values of k result in smoother estimates, while smaller values of k result in more flexible and more wiggly estimates. 
+
+### **Comprehension Check: Nearest Neighbors**  
+
+#### **Question 1**  
+Previously, we used logistic regression to predict sex based on height. Now we are going to use knn to do the same. Set the seed to 1, then use the caret package to partition the dslabs heights data into a training and test set of equal size. Use the sapply() or map function to perform knn with k values of seq(1, 101, 3) and calculate F1 scores with the F_meas() function using the default value of the relevant argument.
+
+What is the max value of F_1?
+
+```{r, warning = FALSE}
+library(caret)
+library(dslabs)
+library(tidyverse)
+set.seed(1, sample.kind = 'Rounding')
+
+
+data("heights")
+library(caret)
+library(dplyr)
+ks <- seq(1, 101, 3)
+
+
+F_1 <- sapply(ks, function(k){
+  set.seed(1, sample.kind = "Rounding")
+  test_index <- createDataPartition(heights$sex, times = 1, p = 0.5, list = FALSE)
+  test_set <- heights[test_index, ]
+  train_set <- heights[-test_index, ]
+  fit <- knn3(sex ~ height, data = train_set, k = k)
+  y_hat <- predict(fit, test_set, type = "class") %>% 
+    factor(levels = levels(train_set$sex))
+  F_meas(data = y_hat, reference = test_set$sex)
+})
+max(F_1)
+
+df <- tibble(ks,F_1)
+j <-ggplot(df, aes(ks, F_1,label = ks))+geom_point()
+j+geom_text()
+```
+
+#### **Question 2**  
+Next we will use the same gene expression example used in the Comprehension Check: Distance exercises. You can load it like this:
+
+```{r}
+library(dslabs)
+data("tissue_gene_expression")
+```
+First, set the seed to 1 and split the data into training and test sets. Then, report the accuracy you obtain from predicting tissue type using KNN with k = 1, 3, 5, 7, 9, 11 using sapply() or map_df(). Note: use the createDataPartition() function outside of sapply() or map_df().
+
+```{r} 
+library(caret)
+library(dslabs)
+data("tissue_gene_expression")
+
+set.seed(1,sample.kind = "Rounding")
+
+y <- tissue_gene_expression$y
+x <- tissue_gene_expression$x
+
+train_index <- createDataPartition(y, list = FALSE)
+
+
+test_set_x <- x[train_index,]
+train_set_x <- x[-train_index,] 
+test_set_y <- y[train_index]
+train_set_y <- y[-train_index]
+
+sapply(seq(1, 11, 2), function(k){
+  fit <- knn3(train_set_x, train_set_y, k = k)
+  y_hat <- predict(fit, newdata = data.frame(test_set_x),
+                   type = "class")
+  mean(y_hat == test_set_y)
+})
+
+```
+

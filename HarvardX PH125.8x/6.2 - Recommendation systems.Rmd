@@ -1,0 +1,139 @@
+---
+title: "6.2 - Recommendation Systems"
+author: "Sajini Arumugam"
+date: "7/6/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Comprehension Check: Recommendation Systems
+
+The following exercises all work with the movielens data, which can be loaded using the following code:
+```{r}
+library(tidyverse)
+library(lubridate)
+library(dslabs)
+data("movielens")
+```
+
+#### **Question 1**  
+Compute the number of ratings for each movie and then plot it against the year the movie came out. Use the square root transformation on the y-axis when plotting.
+
+What year has the highest median number of ratings?
+
+```{r}
+rating_by_year <- movielens %>% group_by(movieId,year)%>%
+  summarize(n = n_distinct(userId)) %>% group_by(year)%>% 
+  summarize(Median = median(n))%>% arrange(desc(Median))
+rating_by_year
+```
+
+#### **Question 2**  
+We see that, on average, movies that came out after 1993 get more ratings. We also see that with newer movies, starting in 1993, the number of ratings decreases with year: the more recent a movie is, the less time users have had to rate it.
+
+Among movies that came out in 1993 or later, select the top 25 movies with the highest average number of ratings per year (n/year), and caculate the average rating of each of them. To calculate number of ratings per year, use 2018 as the end year.
+
+What is the average rating for the movie The Shawshank Redemption ("Shawshank Redemption, The")?
+
+
+```{r}
+movielens %>% 
+  filter(year >= 1993) %>%
+  group_by(movieId) %>%
+  summarize(n = n(), years = 2018 - first(year),
+            title = title[1],
+            rating = mean(rating)) %>%
+  mutate(rate = n/years) %>%
+  top_n(25, rate) %>%
+  arrange(desc(rate)) 
+```
+
+#### **Question 3**  
+From the table constructed in Q2, we can see that the most frequently rated movies tend to have above average ratings. This is not surprising: more people watch popular movies. To confirm this, stratify the post-1993 movies by ratings per year and compute their average ratings. To calculate number of ratings per year, use 2018 as the end year. Make a plot of average rating versus ratings per year and show an estimate of the trend.
+
+What type of trend do you observe?
+
+```{r}
+movielens %>%
+   filter(year >= 1993) %>%
+   group_by(movieId) %>%
+   summarize(avg_rating = mean(rating), n = n(), title = title[1], no_of_years=2018 - first(year)) %>%
+   mutate(rating_per_year = n / no_of_years)%>%
+   ggplot(aes(rating_per_year,avg_rating))+ geom_point()+ geom_smooth()
+```
+
+#### **Question 4** 
+
+Suppose you are doing a predictive analysis in which you need to fill in the missing ratings with some value.
+
+Given your observations in the exercise in Q3, which of the following strategies would be most appropriate?
+
+- Fill in the missing values with the average rating across all movies.
+- Fill in the missing values with 0.
+- Fill in the missing values with a lower value than the average rating across all movies.   [*]
+- Fill in the value with a higher value than the average rating across all movies.
+- None of the above.
+
+#### **Question 5** 
+The movielens dataset also includes a time stamp. This variable represents the time and data in which the rating was provided. The units are seconds since January 1, 1970. Create a new column date with the date.
+
+Which code correctly creates this new column?
+
+```{r}
+ movielens <- mutate(movielens, date = as_datetime(timestamp))
+
+```
+
+#### **Question 6**  
+Compute the average rating for each week and plot this average against date. Hint: use the round_date() function before you group_by().
+
+What type of trend do you observe?
+
+```{r}
+ movielens%>% mutate(date = round_date(date, unit ="week")) %>%
+   group_by(date) %>% summarize(avg_rating = mean(rating)) %>%
+   ggplot(aes(date,avg_rating))+
+   geom_point() + geom_smooth()
+```
+
+#### **Question 7**  
+Consider again the plot you generated in Q6.
+
+If we define  du,i  as the day for user's  u  rating of movie  i , which of the following models is most appropriate?
+
+- Yu,i=μ+bi+bu+du,i+εu,i 
+- Yu,i=μ+bi+bu+du,iβ+εu,i 
+- Yu,i=μ+bi+bu+du,iβi+εu,i 
+- Yu,i=μ+bi+bu+f(du,i)+εu,i , with  f  a smooth function of  du,i   [*]
+
+#### **Question 8**  
+The movielens data also has a genres column. This column includes every genre that applies to the movie. Some movies fall under several genres. Define a category as whatever combination appears in this column. Keep only categories with more than 1,000 ratings. Then compute the average and standard error for each category. Plot these as error bar plots.
+
+Which genre has the lowest average rating?
+
+```{r}
+movielens %>% group_by(genres) %>%
+	summarize(n = n(), avg = mean(rating), se = sd(rating)/sqrt(n())) %>%
+	filter(n >= 1000) %>% 
+	mutate(genres = reorder(genres, avg)) %>%
+	ggplot(aes(x = genres, y = avg, ymin = avg - 2*se, ymax = avg + 2*se)) + 
+	geom_point() +
+	geom_errorbar() + 
+	theme(axis.text.x = element_text(angle = 90, hjust = 1))
+```
+
+#### **QUestion 9**  
+The plot you generated in Q8 shows strong evidence of a genre effect. Consider this plot as you answer the following question.
+
+If we define  gu,i  as the genre for user  u 's rating of movie  i , which of the following models is most appropriate?
+ 
+ - Yu,i=μ+bi+bu+gu,i+εu,i 
+ - Yu,i=μ+bi+bu+gu,iβ+εu,i 
+ - Yu,i=μ+bi+bu+∑Kk=1xku,iβk+εu,i , with  xku,i=1  if  gu,i  is genre  k     [*]
+ - Yu,i=μ+bi+bu+f(gu,i)+εu,i , with  f  a smooth function of  gu,i
+ 
+ 
+ 

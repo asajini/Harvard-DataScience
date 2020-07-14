@@ -417,6 +417,7 @@ May       $117,921  $15,437</code></pre>
 <pre><code>dat %&gt;% mutate_all(parse_number)</code></pre>
 <pre><code>dat %&gt;% mutate_at(2:3, funs(str_replace_all(., c(&quot;\\$|,&quot;), &quot;&quot;))) %&gt;% 
     mutate_at(2:3, as.numeric)</code></pre>
+<hr />
 </div>
 <div id="assessment-string-processing-part-2" class="section level3">
 <h3><strong>Assessment: String Processing Part 2</strong></h3>
@@ -635,6 +636,147 @@ converted &lt;- s %&gt;%
    str_replace(&quot;\\s|feet|foot|ft&quot;, &quot;&#39;&quot;) %&gt;% 
    str_replace(&quot;\\s|inches|in|&#39;&#39;|\&quot;&quot;, &quot;&quot;) %&gt;% 
    str_replace(&quot;^([4-7])\\s*[,\\.\\s+]\\s*(\\d*)$&quot;, &quot;\\1&#39;\\2&quot;) </code></pre>
+<hr />
+</div>
+</div>
+<div id="assessment-part-1-string-processing-part-3" class="section level3">
+<h3>Assessment Part 1: String Processing Part 3</h3>
+<p>In this part of the assessment, you will answer several multiple choice questions that review the concepts of string processing. You can answer these questions without using R, although you may find it helpful to experiment with commands in your console.</p>
+<p>In the second part of the assessment on the next page, you will import a real dataset and use string processing to clean it for analysis. This will require you to write code in R.</p>
+<p>Want even more practice with regular expressions? Complete the lessons and exercises in the RegexOne online interactive tutorial!</p>
+<hr />
+<div id="question-1-2" class="section level4">
+<h4><strong>Question 1</strong></h4>
+<pre><code>s &lt;- c(&quot;5&#39;10&quot;, &quot;6&#39;1\&quot;&quot;, &quot;5&#39;8inches&quot;, &quot;5&#39;7.5&quot;)
+tab &lt;- data.frame(x = s)</code></pre>
+<p>If you use the extract code from our video, the decimal point is dropped. What modification of the code would allow you to put the decimals in a third column called “decimal”?</p>
+<pre><code>extract(data = tab, col = x, into = c(“feet”, “inches”, “decimal”), 
+regex = &quot;(\\d)&#39;(\\d{1,2})(\\.)?&quot;</code></pre>
+<pre><code>extract(data = tab, col = x, into = c(&quot;feet&quot;, &quot;inches&quot;, &quot;decimal&quot;), 
+regex = &quot;(\\d)&#39;(\\d{1,2})(\\.\\d+)&quot; </code></pre>
+<pre><code>extract(data = tab, col = x, into = c(&quot;feet&quot;, &quot;inches&quot;, &quot;decimal&quot;), 
+regex = &quot;(\\d)&#39;(\\d{1,2})\\.\\d+?&quot;</code></pre>
+<pre><code>extract(data = tab, col = x, into = c(&quot;feet&quot;, &quot;inches&quot;, &quot;decimal&quot;), 
+regex = &quot;(\\d)&#39;(\\d{1,2})(\\.\\d+)?&quot;)    </code></pre>
+</div>
+<div id="question-2-2" class="section level4">
+<h4><strong>Question 2</strong></h4>
+<p>You have the following data frame, schedule:</p>
+<pre><code>&gt;schedule
+day     staff
+Monday      Mandy, Chris and Laura
+Tuesday     Steve, Ruth and Frank</code></pre>
+<p>You want to turn this into a more useful data frame.</p>
+<p>Which two commands would properly split the text in the “staff” column into each individual name? Select ALL that apply.</p>
+<ul>
+<li>str_split(schedule$staff, “,|and”)</li>
+<li>str_split(schedule$staff, “, | and”) [*]</li>
+<li>str_split(schedule$staff, “,\s|\sand\s”) [*]</li>
+<li>str_split(schedule$staff, “\s?(,|and)\s?”)</li>
+</ul>
+</div>
+<div id="question-3-2" class="section level4">
+<h4><strong>Question 3</strong></h4>
+<p>You have the following data frame, schedule:</p>
+<pre><code>&gt; schedule
+day         staff
+Monday      Mandy, Chris and Laura
+Tuesday     Steve, Ruth and Frank</code></pre>
+<p>What code would successfully turn your “Schedule” table into the following tidy table?</p>
+<pre><code>&gt; tidy
+day     staff
+&lt;chr&gt;   &lt;chr&gt;
+Monday  Mandy
+Monday  Chris
+Monday  Laura
+Tuesday Steve
+Tuesday Ruth 
+Tuesday Frank</code></pre>
+<pre><code>[*]
+tidy &lt;- schedule %&gt;% 
+  mutate(staff = str_split(staff, &quot;, | and &quot;)) %&gt;% 
+  unnest()</code></pre>
+<pre><code>tidy &lt;- separate(schedule, staff, into = c(&quot;s1&quot;,&quot;s2&quot;,&quot;s3&quot;), sep = “,”) %&gt;% 
+  gather(key = s, value = staff, s1:s3)</code></pre>
+<pre><code>tidy &lt;- schedule %&gt;% 
+  mutate(staff = str_split(staff, &quot;, | and &quot;, simplify = TRUE)) %&gt;% 
+  unnest()</code></pre>
+</div>
+<div id="question-4-2" class="section level4">
+<h4><strong>Question 4</strong></h4>
+<p>Using the gapminder data, you want to recode countries longer than 12 letters in the region “Middle Africa” to their abbreviations in a new column, “country_short”. Which code would accomplish this?</p>
+<pre><code>dat &lt;- gapminder %&gt;% filter(region == &quot;Middle Africa&quot;) %&gt;% 
+  mutate(recode(country, 
+                &quot;Central African Republic&quot; = &quot;CAR&quot;, 
+                &quot;Congo, Dem. Rep.&quot; = &quot;DRC&quot;,
+                &quot;Equatorial Guinea&quot; = &quot;Eq. Guinea&quot;))</code></pre>
+<pre><code>dat &lt;- gapminder %&gt;% filter(region == &quot;Middle Africa&quot;) %&gt;% 
+  mutate(country_short = recode(country, 
+                                c(&quot;Central African Republic&quot;, &quot;Congo, Dem. Rep.&quot;, &quot;Equatorial Guinea&quot;),
+                                c(&quot;CAR&quot;, &quot;DRC&quot;, &quot;Eq. Guinea&quot;)))</code></pre>
+<pre><code>dat &lt;- gapminder %&gt;% filter(region == &quot;Middle Africa&quot;) %&gt;% 
+  mutate(country = recode(country, 
+                          &quot;Central African Republic&quot; = &quot;CAR&quot;, 
+                          &quot;Congo, Dem. Rep.&quot; = &quot;DRC&quot;,
+                          &quot;Equatorial Guinea&quot; = &quot;Eq. Guinea&quot;))</code></pre>
+<pre><code>[*]
+dat &lt;- gapminder %&gt;% filter(region == &quot;Middle Africa&quot;) %&gt;% 
+  mutate(country_short = recode(country, 
+                                &quot;Central African Republic&quot; = &quot;CAR&quot;, 
+                                &quot;Congo, Dem. Rep.&quot; = &quot;DRC&quot;,
+                                &quot;Equatorial Guinea&quot; = &quot;Eq. Guinea&quot;))</code></pre>
+<p>Import raw Brexit referendum polling data from Wikipedia:</p>
+<p>library(rvest) library(tidyverse) library(stringr) url &lt;- “<a href="https://en.wikipedia.org/w/index.php?title=Opinion_polling_for_the_United_Kingdom_European_Union_membership_referendum&amp;oldid=896735054" class="uri">https://en.wikipedia.org/w/index.php?title=Opinion_polling_for_the_United_Kingdom_European_Union_membership_referendum&amp;oldid=896735054</a>” tab &lt;- read_html(url) %&gt;% html_nodes(“table”) polls &lt;- tab[[5]] %&gt;% html_table(fill = TRUE) You will use a variety of string processing techniques learned in this section to reformat these data.</p>
+</div>
+<div id="question-5-1" class="section level4">
+<h4><strong>Question 5</strong></h4>
+<p>Some rows in this table do not contain polls. You can identify these by the lack of the percent sign (%) in the Remain column.</p>
+<p>Update polls by changing the column names to c(“dates”, “remain”, “leave”, “undecided”, “lead”, “samplesize”, “pollster”, “poll_type”, “notes”) and only keeping rows that have a percent sign (%) in the remain column.</p>
+<p>How many rows remain in the polls data frame?</p>
+<pre><code>names(polls) &lt;- c(&quot;dates&quot;, &quot;remain&quot;, &quot;leave&quot;, &quot;undecided&quot;, &quot;lead&quot;, &quot;samplesize&quot;, &quot;pollster&quot;, &quot;poll_type&quot;, &quot;notes&quot;)
+polls &lt;- polls[str_detect(polls$remain, &quot;%&quot;), -9]
+nrow(polls)</code></pre>
+</div>
+<div id="question-6-1" class="section level4">
+<h4><strong>Question 6</strong></h4>
+<p>The remain and leave columns are both given in the format “48.1%”: percentages out of 100% with a percent symbol.</p>
+<p>Which of these commands converts the remain vector to a proportion between 0 and 1? Check all correct answers.</p>
+<ul>
+<li>as.numeric(str_remove(polls$remain, “%”))</li>
+<li>as.numeric(polls$remain)/100</li>
+<li>parse_number(polls$remain)</li>
+<li>str_remove(polls$remain, “%”)/100</li>
+<li>as.numeric(str_replace(polls$remain, “%”, &quot;&quot;))/100 [*]</li>
+<li>parse_number(polls$remain)/100 [*]</li>
+</ul>
+</div>
+<div id="question-7-1" class="section level4">
+<h4><strong>Question 7</strong></h4>
+<p>The undecided column has some “N/A” values. These “N/A”s are only present when the remain and leave columns total 100%, so they should actually be zeros.</p>
+<p>Use a function from stringr to convert “N/A” in the undecided column to 0. The format of your command should be function_name(polls$undecided, “arg1”, “arg2”).</p>
+<p>What function replaces function_name?<br />
+str_replace_all<br />
+What argument replaces arg1?<br />
+N/A<br />
+What argument replaces arg2? 0</p>
+</div>
+<div id="question-8-1" class="section level4">
+<h4><strong>Question 8</strong></h4>
+<p>The dates column contains the range of dates over which the poll was conducted. The format is “8-10 Jan” where the poll had a start date of 2016-01-08 and end date of 2016-01-10. Some polls go across month boundaries (16 May-12 June).</p>
+<p>The end date of the poll will always be one or two digits, followed by a space, followed by the month as one or more letters (either capital or lowercase). In these data, all month abbreviations or names have 3, 4 or 5 letters.</p>
+<p>Write a regular expression to extract the end day and month from dates. Insert it into the skeleton code below:</p>
+<pre><code>temp &lt;- str_extract_all(polls$dates, _____)
+end_date &lt;- sapply(temp, function(x) x[length(x)]) # take last element (handles polls that cross month boundaries)</code></pre>
+<p>Which of the following regular expressions correctly extracts the end day and month when inserted into the blank in the code above?</p>
+<ul>
+<li>“\d?\s[a-zA-Z]?”</li>
+<li>“\d+\s[a-zA-Z]+” [*]</li>
+<li>“\d+\s[A-Z]+”</li>
+<li>“[0-9]+\s[a-zA-Z]+” [*]</li>
+<li>“\d{1,2}\s[a-zA-Z]+” [*]</li>
+<li>“\d{1,2}[a-zA-Z]+”</li>
+<li>“\d+\s[a-zA-Z]{3,5}” [*]</li>
+</ul>
 </div>
 </div>
 

@@ -415,7 +415,227 @@ May       $117,921  $15,437</code></pre>
 <pre><code>dat %&gt;% mutate_at(2:3, parse_number)</code></pre>
 <pre><code>dat %&gt;% mutate_at(2:3, as.numeric)</code></pre>
 <pre><code>dat %&gt;% mutate_all(parse_number)</code></pre>
-<p><code>dat %&gt;% mutate_at(2:3, funs(str_replace_all(., c(&quot;\\$|,&quot;), &quot;&quot;))) %&gt;%      mutate_at(2:3, as.numeric)</code> [*]</p>
+<pre><code>dat %&gt;% mutate_at(2:3, funs(str_replace_all(., c(&quot;\\$|,&quot;), &quot;&quot;))) %&gt;% 
+    mutate_at(2:3, as.numeric)</code></pre>
+</div>
+<div id="assessment-string-processing-part-2" class="section level3">
+<h3><strong>Assessment: String Processing Part 2</strong></h3>
+<div id="question-1-1" class="section level4">
+<h4><strong>Question 1</strong></h4>
+<pre><code>not_inches &lt;- function(x, smallest = 50, tallest = 84) {
+  inches &lt;- suppressWarnings(as.numeric(x))
+  ind &lt;- is.na(inches) | inches &lt; smallest | inches &gt; tallest 
+  ind
+}</code></pre>
+<p>In this function, what TWO types of values are identified as not being correctly formatted in inches?</p>
+<ul>
+<li>Values that specifically contain apostrophes (‘), periods (.) or quotations (“).</li>
+<li>Values that result in NA’s when converted to numeric [*]</li>
+<li>Values less than 50 inches or greater than 84 inches [*]</li>
+<li>Values that are stored as a character class, because most are already classed as numeric.</li>
+</ul>
+</div>
+<div id="question-2-1" class="section level4">
+<h4><strong>Question 2</strong></h4>
+<p>Which of the following arguments, when passed to the function not_inches, would return the vector c(FALSE)?</p>
+<ul>
+<li>c(175)</li>
+<li>c(“5’8””)</li>
+<li>c(70) [*]</li>
+<li>c(85) (the height of Shaquille O’Neal in inches)</li>
+</ul>
+</div>
+<div id="question-3-1" class="section level4">
+<h4><strong>Question 3</strong></h4>
+<p>Our function not_inches returns the object ind. Which answer correctly describes ind?</p>
+<ul>
+<li>ind is a logical vector of TRUE and FALSE, equal in length to the vector x (in the arguments list). TRUE indicates that a height entry is incorrectly formatted. [*]</li>
+<li>ind is a logical vector of TRUE and FALSE, equal in length to the vector x (in the arguments list). TRUE indicates that a height entry is correctly formatted.</li>
+<li>ind is a data frame like our reported_heights table but with an extra column of TRUE or FALSE. TRUE indicates that a height entry is incorrectly formatted.</li>
+<li>ind is a numeric vector equal to reported_heights$heights but with incorrectly formatted heights replaced with NAs.</li>
+</ul>
+</div>
+<div id="question-4-1" class="section level4">
+<h4><strong>Question 4</strong></h4>
+<p>Given the following code</p>
+<blockquote>
+<p>s [1] “70” “5 ft” “4’11” &quot;&quot; “.” “Six feet” What pattern vector yields the following result?</p>
+</blockquote>
+<pre><code>str_view_all(s, pattern)
+70
+5 ft
+4’11
+.
+Six feet</code></pre>
+<ul>
+<li>pattern &lt;- “\d|ft” [*]</li>
+<li>pattern &lt;- “ft”</li>
+<li>pattern &lt;- “\d\d|ft”</li>
+<li>pattern &lt;- “\d|feet”</li>
+</ul>
+</div>
+<div id="question-5" class="section level4">
+<h4><strong>Question 5</strong></h4>
+<p>You enter the following set of commands into your R console. What is your printed result?</p>
+<pre><code>&gt; animals &lt;- c(&quot;cat&quot;, &quot;puppy&quot;, &quot;Moose&quot;, &quot;MONKEY&quot;)
+&gt; pattern &lt;- &quot;[a-z]&quot;
+&gt; str_detect(animals, pattern)</code></pre>
+<ul>
+<li>TRUE</li>
+<li>TRUE TRUE TRUE TRUE</li>
+<li>TRUE TRUE TRUE FALSE [*]</li>
+<li>TRUE TRUE FALSE FALSE</li>
+</ul>
+</div>
+<div id="question-6" class="section level4">
+<h4><strong>Question 6</strong></h4>
+<p>You enter the following set of commands into your R console. What is your printed result?</p>
+<pre><code>&gt; animals &lt;- c(&quot;cat&quot;, &quot;puppy&quot;, &quot;Moose&quot;, &quot;MONKEY&quot;)
+&gt; pattern &lt;- &quot;[A-Z]$&quot;
+&gt; str_detect(animals, pattern)</code></pre>
+<ul>
+<li>FALSE FALSE FALSE FALSE</li>
+<li>FALSE FALSE TRUE TRUE</li>
+<li>FALSE FALSE FALSE TRUE [*]</li>
+<li>TRUE TRUE TRUE FALSE</li>
+</ul>
+</div>
+<div id="question-7" class="section level4">
+<h4><strong>Question 7</strong></h4>
+<p>You enter the following set of commands into your R console. What is your printed result?</p>
+<pre><code>&gt; animals &lt;- c(&quot;cat&quot;, &quot;puppy&quot;, &quot;Moose&quot;, &quot;MONKEY&quot;)
+&gt; pattern &lt;- &quot;[a-z]{4,5}&quot;
+&gt; str_detect(animals, pattern)</code></pre>
+<ul>
+<li>FALSE TRUE TRUE FALSE [*]</li>
+<li>TRUE TRUE FALSE FALSE</li>
+<li>FALSE FALSE FALSE TRUE</li>
+<li>TRUE TRUE TRUE FALSE</li>
+</ul>
+</div>
+<div id="question-8" class="section level4">
+<h4><strong>Question 8</strong></h4>
+<p>Given the following code</p>
+<pre><code>animals &lt;- c(&quot;moose&quot;, &quot;monkey&quot;, &quot;meerkat&quot;, &quot;mountain lion&quot;)</code></pre>
+<p>Which TWO “pattern” vectors would yield the following result?</p>
+<pre><code>&gt; str_detect(animals, pattern)
+[1] TRUE TRUE TRUE TRUE</code></pre>
+<ul>
+<li>pattern &lt;- “mo*” []</li>
+<li>pattern &lt;- “mo?” [*]</li>
+<li>pattern &lt;- “mo+”</li>
+<li>pattern &lt;- “moo*”</li>
+</ul>
+</div>
+<div id="question-9" class="section level4">
+<h4><strong>Question 9</strong></h4>
+<p>You are working on some data from different universities. You have the following vector:</p>
+<pre><code>&gt; schools
+[1] &quot;U. Kentucky&quot;                 &quot;Univ New Hampshire&quot;          &quot;Univ. of Massachusetts&quot;      &quot;University Georgia&quot;         
+[5] &quot;U California&quot;                &quot;California State University&quot;</code></pre>
+<p>You want to clean this data to match the full names of each university:</p>
+<pre><code>&gt; final
+[1] &quot;University of Kentucky&quot;      &quot;University of New Hampshire&quot; &quot;University of Massachusetts&quot; &quot;University of Georgia&quot;         
+[5] &quot;University of California&quot;    &quot;California State University&quot;</code></pre>
+<p>What of the following commands could accomplish this?</p>
+<pre><code>schools %&gt;% 
+    str_replace(&quot;Univ\\.?|U\\.?&quot;, &quot;University &quot;) %&gt;% 
+    str_replace(&quot;^University of |^University &quot;, &quot;University of &quot;)</code></pre>
+<pre><code>[*]
+schools %&gt;% 
+    str_replace(&quot;^Univ\\.?\\s|^U\\.?\\s&quot;, &quot;University &quot;) %&gt;% 
+    str_replace(&quot;^University of |^University &quot;, &quot;University of &quot;)</code></pre>
+<pre><code>schools %&gt;% 
+   str_replace(&quot;^Univ\\.\\s|^U\\.\\s&quot;, &quot;University&quot;) %&gt;% 
+   str_replace(&quot;^University of |^University &quot;, &quot;University of &quot;)</code></pre>
+<pre><code>schools %&gt;% 
+   str_replace(&quot;^Univ\\.?\\s|^U\\.?\\s&quot;, &quot;University&quot;) %&gt;% 
+   str_replace(&quot;University &quot;, &quot;University of &quot;)</code></pre>
+</div>
+<div id="question-10" class="section level4">
+<h4><strong>Question 10</strong></h4>
+<p>Rather than using the pattern_with_groups vector from the video, you accidentally write in the following code:</p>
+<pre><code>problems &lt;- c(&quot;5.3&quot;, &quot;5,5&quot;, &quot;6 1&quot;, &quot;5 .11&quot;, &quot;5, 12&quot;)
+pattern_with_groups &lt;- &quot;^([4-7])[,\\.](\\d*)$&quot;
+str_replace(problems, pattern_with_groups, &quot;\\1&#39;\\2&quot;)</code></pre>
+<p>What is your result?</p>
+<pre><code>[*]
+[1] &quot;5&#39;3&quot; &quot;5&#39;5&quot; &quot;6 1&quot; &quot;5 .11&quot; &quot;5, 12&quot;</code></pre>
+<pre><code>[1] &quot;5.3&quot; &quot;5,5&quot; &quot;6 1&quot; &quot;5 .11&quot; &quot;5, 12&quot;
+</code></pre>
+<pre><code>[1] &quot;5&#39;3&quot; &quot;5&#39;5&quot; &quot;6&#39;1&quot; &quot;5 .11&quot; &quot;5, 12&quot;</code></pre>
+<pre><code>[1] &quot;5&#39;3&quot; &quot;5&#39;5&quot; &quot;6&#39;1&quot; &quot;5’11&quot; &quot;5’12&quot;</code></pre>
+</div>
+<div id="question-11" class="section level4">
+<h4><strong>Question 11</strong></h4>
+<p>You notice your mistake and correct your pattern regex to the following</p>
+<pre><code>problems &lt;- c(&quot;5.3&quot;, &quot;5,5&quot;, &quot;6 1&quot;, &quot;5 .11&quot;, &quot;5, 12&quot;)
+pattern_with_groups &lt;- &quot;^([4-7])[,\\.\\s](\\d*)$&quot;
+str_replace(problems, pattern_with_groups, &quot;\\1&#39;\\2&quot;)</code></pre>
+<p>What is your result?</p>
+<pre><code>[1] &quot;5&#39;3&quot; &quot;5&#39;5&quot; &quot;6 1&quot; &quot;5 .11&quot; &quot;5, 12&quot;</code></pre>
+<pre><code>[1] &quot;5.3&quot; &quot;5,5&quot; &quot;6 1&quot; &quot;5 .11&quot; &quot;5, 12&quot;
+</code></pre>
+<pre><code>[*]
+[1] &quot;5&#39;3&quot; &quot;5&#39;5&quot; &quot;6&#39;1&quot; &quot;5 .11&quot; &quot;5, 12&quot;</code></pre>
+<pre><code>[1] &quot;5&#39;3&quot; &quot;5&#39;5&quot; &quot;6&#39;1&quot; &quot;5’11&quot; &quot;5’12&quot;</code></pre>
+</div>
+<div id="question-12" class="section level4">
+<h4><strong>Question 12</strong></h4>
+<p>In our example, we use the following code to detect height entries that do not match our pattern of x’y”.</p>
+<pre><code>converted &lt;- problems %&gt;% 
+  str_replace(&quot;feet|foot|ft&quot;, &quot;&#39;&quot;) %&gt;% 
+  str_replace(&quot;inches|in|&#39;&#39;|\&quot;&quot;, &quot;&quot;) %&gt;% 
+  str_replace(&quot;^([4-7])\\s*[,\\.\\s+]\\s*(\\d*)$&quot;, &quot;\\1&#39;\\2&quot;)
+
+pattern &lt;- &quot;^[4-7]\\s*&#39;\\s*\\d{1,2}$&quot;
+index &lt;- str_detect(converted, pattern)
+converted[!index]</code></pre>
+<p>Which answer best describes the differences between the regex string we use as an argument in</p>
+<pre><code>str_replace(&quot;^([4-7])\\s*[,\\.\\s+]\\s*(\\d*)$&quot;, &quot;\\1&#39;\\2&quot;) and the regex string in pattern &lt;- &quot;^[4-7]\\s*&#39;\\s*\\d{1,2}$&quot;?</code></pre>
+<ul>
+<li>The regex used in str_replace looks for either a comma, period or space between the feet and inches digits, while the pattern regex just looks for an apostrophe; the regex in str_replace allows for one or more digits to be entered as inches, while the pattern regex only allows for one or two digits.</li>
+<li>The regex used in str_replace allows for additional spaces between the feet and inches digits, but the pattern regex does not.</li>
+<li>The regex used in str_replace looks for either a comma, period or space between the feet and inches digits, while the pattern regex just looks for an apostrophe; the regex in str_replace allows none or more digits to be entered as inches, while the pattern regex only allows for the number 1 or 2 to be used.</li>
+<li>The regex used in str_replace looks for either a comma, period or space between the feet and inches digits, while the pattern regex just looks for an apostrophe; the regex in str_replace allows for none or more digits to be entered as inches, while the pattern regex only allows for one or two digits. [*]</li>
+</ul>
+</div>
+<div id="question-13" class="section level4">
+<h4><strong>Question 13</strong></h4>
+<p>You notice a few entries that are not being properly converted using your str_replace and str_detect code</p>
+<p>:</p>
+<pre><code>yes &lt;- c(&quot;5 feet 7inches&quot;, “5 7”)
+no &lt;- c(&quot;5ft 9 inches&quot;, &quot;5 ft 9 inches&quot;)
+s &lt;- c(yes, no)
+
+converted &lt;- s %&gt;% 
+  str_replace(&quot;feet|foot|ft&quot;, &quot;&#39;&quot;) %&gt;% 
+  str_replace(&quot;inches|in|&#39;&#39;|\&quot;&quot;, &quot;&quot;) %&gt;% 
+  str_replace(&quot;^([4-7])\\s*[,\\.\\s+]\\s*(\\d*)$&quot;, &quot;\\1&#39;\\2&quot;)
+
+pattern &lt;- &quot;^[4-7]\\s*&#39;\\s*\\d{1,2}$&quot;
+str_detect(converted, pattern)
+[1]  TRUE TRUE FALSE FALSE</code></pre>
+<p>It seems like the problem may be due to spaces around the words feet|foot|ft and inches|in. What is another way you could fix this problem?</p>
+<pre><code>[*]
+converted &lt;- s %&gt;% 
+    str_replace(&quot;\\s*(feet|foot|ft)\\s*&quot;, &quot;&#39;&quot;) %&gt;% 
+    str_replace(&quot;\\s*(inches|in|&#39;&#39;|\&quot;)\\s*&quot;, &quot;&quot;) %&gt;% 
+    str_replace(&quot;^([4-7])\\s*[,\\.\\s+]\\s*(\\d*)$&quot;, &quot;\\1&#39;\\2&quot;)</code></pre>
+<pre><code>converted &lt;- s %&gt;% 
+   str_replace(&quot;\\s+feet|foot|ft\\s+”, &quot;&#39;&quot;) %&gt;% 
+   str_replace(&quot;\\s+inches|in|&#39;&#39;|\&quot;\\s+&quot;, &quot;&quot;) %&gt;% 
+   str_replace(&quot;^([4-7])\\s*[,\\.\\s+]\\s*(\\d*)$&quot;, &quot;\\1&#39;\\2&quot;)</code></pre>
+<pre><code>converted &lt;- s %&gt;% 
+   str_replace(&quot;\\s*|feet|foot|ft&quot;, &quot;&#39;&quot;) %&gt;% 
+   str_replace(&quot;\\s*|inches|in|&#39;&#39;|\&quot;&quot;, &quot;&quot;) %&gt;% 
+   str_replace(&quot;^([4-7])\\s*[,\\.\\s+]\\s*(\\d*)$&quot;, &quot;\\1&#39;\\2&quot;) </code></pre>
+<pre><code>converted &lt;- s %&gt;% 
+   str_replace_all(“\\s”, “”) %&gt;% 
+   str_replace(&quot;\\s|feet|foot|ft&quot;, &quot;&#39;&quot;) %&gt;% 
+   str_replace(&quot;\\s|inches|in|&#39;&#39;|\&quot;&quot;, &quot;&quot;) %&gt;% 
+   str_replace(&quot;^([4-7])\\s*[,\\.\\s+]\\s*(\\d*)$&quot;, &quot;\\1&#39;\\2&quot;) </code></pre>
+</div>
 </div>
 
 

@@ -1,0 +1,225 @@
+---
+title: "4 - Dates, Times, and Text Mining"
+author: "Sajini Arumugam"
+output: html_document
+weight: 2
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Assessment Part 1: Dates, Times, and Text Mining
+
+This assessment reviews several concepts about dates, times, and text mining. In part 1 on this page, you will practice extracting and manipulating dates in real datasets. In part 2 on the next page, you will walk through a sentiment analysis of a novel using steps covered in the previous section.
+
+Use the following libraries and options for coding questions:
+
+library(dslabs)
+library(lubridate)
+options(digits = 3) 
+
+#### **Question 1**  
+Which of the following is the standard ISO 8601 format for dates?
+
+- MM-DD-YY
+- YYYY-MM-DD    [*]
+- YYYYMMDD
+- YY-MM-DD
+
+#### **Question 2**  
+
+Which of the following commands could convert this string into the correct date format?
+
+dates <- c("09-01-02", "01-12-07", "02-03-04")
+
+- ymd(dates)
+- mdy(dates)
+- dmy(dates)
+- It is impossible to know which format is correct without additional information.   [*]
+
+#### **Question 3**  
+
+Load the brexit_polls data frame from dslabs:
+```
+data(brexit_polls)
+```
+
+How many polls had a start date (startdate) in April (month number 4)?
+
+```
+sum(month(brexit_polls$startdate) == 4)
+```
+
+Use the round_date function on the enddate column with the argument unit="week". How many polls ended the week of 2016-06-12?
+
+```
+sum(round_date(brexit_polls$enddate, unit = "week") == "2016-06-12")
+```
+
+#### **Question 4**  
+
+Use the weekdays function from lubridate to determine the weekday on which each poll ended (enddate).
+
+On which weekday did the greatest number of polls end?
+- Monday
+- Tuesday
+- Wednesday
+- Thursday
+- Friday
+- Saturday
+- Sunday    [*]
+
+#### **Question 5**  
+Load the movielens data frame from dslabs.
+
+data(movielens)
+This data frame contains a set of about 100,000 movie reviews. The timestamp column contains the review date as the number of seconds since 1970-01-01 (epoch time).
+
+Convert the timestamp column to dates using the lubridate as_datetime function.
+
+Which year had the most movie reviews?
+
+```
+dates <- as_datetime(movielens$timestamp)
+reviews_by_year <- table(year(dates))    # count reviews by year
+names(which.max(reviews_by_year))    # name of year with most reviews
+```
+
+Which hour of the day had the most movie reviews?
+
+```
+reviews_by_hour <- table(hour(dates))    # count reviews by hour
+names(which.max(reviews_by_hour))    # name of hour with most reviews
+```
+***
+
+In this part of the assessment, you will walk through a basic text mining and sentiment analysis task.
+
+Project Gutenberg is a digital archive of public domain books. The R package gutenbergr facilitates the importation of these texts into R. We will combine this with the tidyverse and tidytext libraries to practice text mining.
+
+Use these libraries and options:
+
+library(tidyverse)
+library(gutenbergr)
+library(tidytext)
+options(digits = 3)
+You can see the books and documents available in gutenbergr like this:
+
+gutenberg_metadata
+
+#### **Question 6**  
+
+Use str_detect to find the ID of the novel Pride and Prejudice.
+
+How many different ID numbers are returned?
+
+```
+gutenberg_metadata %>%
+    filter(str_detect(title, "Pride and Prejudice"))
+```
+
+#### **Question 7**  
+
+Notice that there are several versions of the book. The gutenberg_works function filters this table to remove replicates and include only English language works. Use this function to find the ID for Pride and Prejudice.
+
+What is the correct ID number?
+```
+gutenberg_works(title == "Pride and Prejudice")$gutenberg_id
+```
+
+#### **Question 8**  
+
+Use the gutenberg_download function to download the text for Pride and Prejudice. Use the tidytext package to create a tidy table with all the words in the text. Save this object as words.
+
+How many words are present in the book?
+
+```
+book <- gutenberg_download(1342)
+words <- book %>%
+  unnest_tokens(word, text)
+nrow(words)
+```
+
+#### **Question 9**  
+
+Remove stop words from the words object. Recall that stop words are defined in the stop_words data frame from the tidytext package.
+
+How many words remain?
+
+```
+words <- words %>% anti_join(stop_words)
+nrow(words)
+```
+
+#### **Question 10**  
+
+After removing stop words, detect and then filter out any token that contains a digit from words.
+
+How many words remain?
+
+```
+words <- words %>%
+  filter(!str_detect(word, "\\d"))
+nrow(words)
+```
+
+#### **Question 11**  
+
+Analyze the most frequent words in the novel after removing stop words and tokens with digits.
+
+How many words appear more than 100 times in the book?
+
+```
+words %>%
+    count(word) %>%
+    filter(n > 100) %>%
+    nrow()
+```
+
+What is the most common word in the book?
+
+```
+words %>%
+    count(word) %>%
+    top_n(1, n) %>%
+    pull(word)
+```
+
+How many times does that most common word appear?
+
+```
+words %>%
+    count(word) %>%
+    top_n(1, n) %>%
+    pull(n)
+```
+
+#### **Question 12**  
+
+Define the afinn lexicon:
+```
+afinn <- get_sentiments("afinn")
+```
+
+Note that this command will trigger a question in the R Console asking if you want to download the AFINN lexicon. Press 1 to select "Yes" (if using RStudio, enter this in the Console tab).
+
+Use this afinn lexicon to assign sentiment values to words. Keep only words that are present in both words and the afinn lexicon. Save this data frame as afinn_sentiments.
+
+How many elements of words have sentiments in the afinn lexicon?
+
+```
+afinn_sentiments <- inner_join(afinn, words)
+nrow(afinn_sentiments)
+```
+
+What proportion of words in afinn_sentiments have a positive value?
+
+```
+mean(afinn_sentiments$value > 0)
+```
+
+How many elements of afinn_sentiments have a value of 4?
+```
+sum(afinn_sentiments$value == 4)
+```

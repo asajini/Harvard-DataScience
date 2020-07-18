@@ -1,0 +1,490 @@
+---
+title: "4 - The Big Short"
+author: "Sajini Arumugam"
+output: html_document
+weight: 2
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### DataCamp Assessment: The Big Short
+
+#### **Exercise 1. Bank earnings**  
+Say you manage a bank that gives out 10,000 loans. The default rate is 0.03 and you lose $200,000 in each foreclosure.
+
+Create a random variable S that contains the earnings of your bank. Calculate the total amount of money lost in this scenario.
+
+```{r}
+# Assign the number of loans to the variable `n`
+n <- 10000
+
+# Assign the loss per foreclosure to the variable `loss_per_foreclosure`
+loss_per_foreclosure <- -200000
+
+# Assign the probability of default to the variable `p_default`
+p_default <- 0.03
+
+# Use the `set.seed` function to make sure your answer matches the expected result after random sampling
+set.seed(1)
+
+# Generate a vector called `defaults` that contains the default outcomes of `n` loans
+defaults <- sample( c(0,1), n, replace = TRUE, prob=c(1-p_default,p_default))
+
+
+# Generate `S`, the total amount of money lost across all foreclosures. Print the value to the console.
+S<-sum(defaults * loss_per_foreclosure)
+S
+
+```
+<br/>
+
+#### **Exercise 2. Bank earnings Monte Carlo**  
+Run a Monte Carlo simulation with 10,000 outcomes for S, the sum of losses over 10,000 loans. Make a histogram of the results.
+
+```{r}
+# Assign the number of loans to the variable `n`
+n <- 10000
+
+# Assign the loss per foreclosure to the variable `loss_per_foreclosure`
+loss_per_foreclosure <- -200000
+
+# Assign the probability of default to the variable `p_default`
+p_default <- 0.03
+
+# Use the `set.seed` function to make sure your answer matches the expected result after random sampling
+set.seed(1)
+
+# The variable `B` specifies the number of times we want the simulation to run
+B <- 10000
+
+# Generate a list of summed losses 'S'. Replicate the code from the previous exercise over 'B' iterations to generate a list of summed losses for 'n' loans.  Ignore any warnings for now.
+S<-replicate (B,{
+  defaults <- sample( c(0,1), n, replace = TRUE, prob=c(1-p_default,p_default))
+  sum(defaults*loss_per_foreclosure)
+  })
+
+hist(S)
+
+```
+<br/>
+
+#### **Exercise 3. Bank earnings expected value**  
+What is the expected value of S, the sum of losses over 10,000 loans? For now, assume a bank makes no money if the loan is paid.
+
+```{r}
+# Assign the number of loans to the variable `n`
+n <- 10000
+
+# Assign the loss per foreclosure to the variable `loss_per_foreclosure`
+loss_per_foreclosure <- -200000
+
+# Assign the probability of default to the variable `p_default`
+p_default <- 0.03
+
+# Calculate the expected loss due to default out of 10,000 loans
+n*((p_default*loss_per_foreclosure)+(1-p_default)*0)
+```
+<br/>
+
+#### **Exercise 4. Bank earnings standard error**  
+What is the standard error of S?
+
+```{r}
+# Assign the number of loans to the variable `n`
+n <- 10000
+
+# Assign the loss per foreclosure to the variable `loss_per_foreclosure`
+loss_per_foreclosure <- -200000
+
+# Assign the probability of default to the variable `p_default`
+p_default <- 0.03
+
+# Compute the standard error of the sum of 10,000 loans
+sqrt(n)*abs(loss_per_foreclosure)*sqrt(p_default*(1-p_default))
+```
+<br/>
+
+#### **Exercise 5. Bank earnings interest rate - 1**  
+So far, we've been assuming that we make no money when people pay their loans and we lose a lot of money when people default on their loans. Assume we give out loans for $180,000. How much money do we need to make when people pay their loans so that our net loss is $0?
+
+In other words, what interest rate do we need to charge in order to not lose money?
+
+```{r}
+# Assign the loss per foreclosure to the variable `loss_per_foreclosure`
+loss_per_foreclosure <- -200000
+
+# Assign the probability of default to the variable `p_default`
+p_default <- 0.03
+
+# Assign a variable `x` as the total amount necessary to have an expected outcome of $0
+x<--(loss_per_foreclosure*p_default)/(1-p_default)
+
+# Convert `x` to a rate, given that the loan amount is $180,000. Print this value to the console.
+
+x/180000
+```
+<br/>
+
+#### **Exercise 6. Bank earnings interest rate - 2**  
+With the interest rate calculated in the last example, we still lose money 50% of the time. What should the interest rate be so that the chance of losing money is 1 in 20?
+
+In math notation, what should the interest rate be so that Pr(S<0)=0.05?
+
+Remember that we can add a constant to both sides of the equation to get:
+Pr(S−E[S]SE[S]<−E[S]SE[S])
+which is
+
+Pr(Z<−[lp+x(1−p)]n(x−l)np(1−p)−−−−−−−−√)=0.05
+Let z = qnorm(0.05) give us the value of z for which:
+Pr(Z≤z)=0.05
+
+```{r}
+# Assign the number of loans to the variable `n`
+n <- 10000
+
+# Assign the loss per foreclosure to the variable `loss_per_foreclosure`
+loss_per_foreclosure <- -200000
+
+# Assign the probability of default to the variable `p_default`
+p_default <- 0.03
+```
+<br/>
+
+#### **Exercise 7. Bank earnings - minimize money loss**  
+The bank wants to minimize the probability of losing money. Which of the following achieves their goal without making interest rates go up?
+
+- A smaller pool of loans
+- A larger probability of default
+- A reduced default rate    [*]
+- A larger cost per loan default
+<br/>
+
+
+### Questions 1 and 2: Insurance rates, part 1  
+Use the information below as you answer this 6-part question.
+
+An insurance company offers a one-year term life insurance policy that pays $150,000 in the event of death within one year. The premium (annual cost) for this policy for a 50 year old female is $1,150. Suppose that in the event of a claim, the company forfeits the premium and loses a total of $150,000, and if there is no claim the company gains the premium amount of $1,150. The company plans to sell 1,000 policies to this demographic.
+
+#### **Question 1a**  
+
+The death_prob data frame contains information about the estimated probability of death within 1 year (prob) for different ages and sexes.
+
+Use death_prob to determine the death probability of a 50 year old female, p.
+
+```{r}
+options(digits = 10)
+library(tidyverse)
+library(dslabs)
+library(dplyr)
+
+data(death_prob)
+p <- death_prob %>%
+  filter(sex == "Female" & age == "50") %>%
+  pull(prob)
+p
+```
+
+#### **Question 1b**  
+
+The loss in the event of the policy holder's death is -$150,000 and the gain if the policy holder remains alive is the premium $1,150.
+
+What is the expected value of the company's net profit on one policy for a 50 year old female?
+
+```{r}
+a <- -150000
+b <- 1150
+
+mu <- a*p + b*(1-p)
+mu
+```
+
+#### **Question 1c**  
+
+Calculate the standard error of the profit on one policy for a 50 year old female.
+
+```{r}
+sigma <- abs(b-a) * sqrt(p*(1-p))
+sigma
+```
+
+#### **Question 1d**  
+
+What is the expected value of the company's profit over all 1,000 policies for 50 year old females?
+
+```{r}
+n <- 1000
+n*mu
+```
+
+#### **Question 1e**  
+
+What is the standard error of the sum of the expected value over all 1,000 policies for 50 year old females?
+
+```{r}
+sqrt(n) * sigma
+```
+
+#### **Question 1f**  
+
+Use the Central Limit Theorem to calculate the probability that the insurance company loses money on this set of 1,000 policies.
+
+```{r}
+pnorm(0, n*mu, sqrt(n)*sigma)
+```
+
+#### **Question 2a**  
+
+Use death_prob to determine the probability of death within one year for a 50 year old male.
+
+```{r}
+p_male <- death_prob %>%
+  filter(sex == "Male" & age == "50") %>%
+  pull(prob)
+p_male
+```
+
+#### **Question 2b**  
+
+Suppose the company wants its expected profits from 1,000 50 year old males with $150,000 life insurance policies to be $700,000. Use the formula for expected value of the sum of draws with the following values and solve for the premium b:
+
+E[S]=μS=700000
+n=1000
+p=death probability of age 50 male
+a=150000
+b=premium
+What premium should be charged?
+
+```{r}
+p <- p_male
+mu_sum <- 700000
+n <- 1000
+a <- -150000
+
+b <- (mu_sum/n-a*p)/(1-p)
+b
+```
+
+#### **Question 2c**  
+
+Using the new 50 year old male premium rate, calculate the standard error of the sum of 1,000 premiums.
+
+```{r}
+sigma_sum <- sqrt(n)*abs(b-a)*sqrt(p*(1-p))
+sigma_sum
+```
+
+#### **Question 2d**  
+
+What is the probability of losing money on a series of 1,000 policies to 50 year old males?
+
+```{r}
+pnorm(0, mu_sum, sigma_sum)
+```
+
+### Questions 3 and 4: insurance rates, part 2
+
+Life insurance rates are calculated using mortality statistics from the recent past. They are priced such that companies are almost assured to profit as long as the probability of death remains similar. If an event occurs that changes the probability of death in a given age group, the company risks significant losses.
+
+In this 6-part question, we'll look at a scenario in which a lethal pandemic disease increases the probability of death within 1 year for a 50 year old to .015. Unable to predict the outbreak, the company has sold 1,000 $150,000 life insurance policies for $1,150.
+
+
+#### **Question 3a**  
+
+What is the expected value of the company's profits over 1,000 policies?
+
+```{r}
+p <- .015    # probability of claim
+a <- -150000    # loss per claim
+b <- 1150    # premium - profit when no claim
+n <- 1000
+
+exp_val <- n*(a*p + b*(1-p))
+exp_val
+```
+
+#### **Question 3b**  
+
+What is the standard error of the expected value of the company's profits over 1,000 policies?
+
+```{r}
+se <- sqrt(n) * abs(b-a) * sqrt(p*(1-p))
+se
+```
+
+#### **Question 3c**  
+
+What is the probability of the company losing money?
+
+```{r}
+pnorm(0, exp_val, se)
+```
+
+#### **Question 3d**  
+
+Suppose the company can afford to sustain one-time losses of $1 million, but larger losses will force it to go out of business.
+
+```{r}
+pnorm(-1*10^6, exp_val, se)
+```
+
+#### **Question 3e**  
+
+Investigate death probabilities p <- seq(.01, .03, .001).
+
+What is the lowest death probability for which the chance of losing money exceeds 90%?
+
+```{r}
+p <- seq(.01, .03, .001)
+a <- -150000    # loss per claim
+b <- 1150    # premium - profit when no claim
+n <- 1000
+
+p_lose_money <- sapply(p, function(p){
+  exp_val <- n*(a*p + b*(1-p))
+  se <- sqrt(n) * abs(b-a) * sqrt(p*(1-p))
+  pnorm(0, exp_val, se)
+})
+
+data.frame(p, p_lose_money) %>%
+  filter(p_lose_money > 0.9) %>%
+  pull(p) %>%
+  min()
+```
+
+#### **Question 3f**  
+
+Investigate death probabilities p <- seq(.01, .03, .0025).
+
+What is the lowest death probability for which the chance of losing over $1 million exceeds 90%?
+
+```{r}
+p_lose_million <- sapply(p, function(p){
+  exp_val <- n*(a*p + b*(1-p))
+  se <- sqrt(n) * abs(b-a) * sqrt(p*(1-p))
+  pnorm(-1*10^6, exp_val, se)
+})
+
+data.frame(p, p_lose_million) %>%
+  filter(p_lose_million > 0.9) %>%
+  pull(p) %>%
+  min()
+```
+
+#### **Question 4a**  
+
+Define a sampling model for simulating the total profit over 1,000 loans with probability of claim p_loss = .015, loss of -$150,000 on a claim, and profit of $1,150 when there is no claim. Set the seed to 25, then run the model once.
+
+What is the reported profit (or loss) in millions (that is, divided by 106)?
+
+```{r}
+set.seed(25)
+
+p <- .015
+loss <- -150000
+profit <- 1150
+n <- 1000
+
+outcomes <- sample(c(loss, profit), n, prob = c(p, 1-p), replace = TRUE)
+sum(outcomes)/10^6
+```
+
+#### **Question 4b**  
+1.0/1.0 point (graded)
+Set the seed to 27, then run a Monte Carlo simulation of your sampling model with 10,000 replicates to simulate the range of profits/losses over 1,000 loans.
+
+What is the observed probability of losing $1 million or more?
+
+```{r}
+set.seed(27)
+B <- 10000
+
+profits <- replicate(B, {
+  outcomes <- sample(c(loss, profit), n, prob = c(p, 1-p), replace = TRUE)
+  sum(outcomes)/10^6
+})
+
+mean(profits < -1)
+```
+
+#### **Question 5a**  
+
+Calculate the premium required for a 5% chance of losing money given n=1000 loans, probability of death p=0.015, and loss per claim l=−150000. Save this premium as x for use in further questions.
+
+```{r}
+p <- .015
+n <- 1000
+l <- -150000
+z <- qnorm(.05)
+x <- -l*( n*p - z*sqrt(n*p*(1-p)))/ ( n*(1-p) + z*sqrt(n*p*(1-p)))
+x
+```
+
+#### **Question 5b**  
+
+What is the expected profit per policy at this rate?
+
+```{r}
+l*p + x*(1-p)
+```
+
+#### **Question 5c**  
+
+What is the expected profit over 1,000 policies?
+
+```{r}
+mu <- n*(l*p + x*(1-p))
+mu
+```
+
+#### **Question 5d**  
+
+Run a Monte Carlo simulation with B=10000to determine the probability of losing money on 1,000 policies given the new premium x, loss on a claim of $150,000, and probability of claim p=.015. Set the seed to 28 before running your simulation.
+
+What is the probability of losing money here?
+
+```{r}
+set.seed(28)
+B <- 10000
+profit <- replicate(B, {
+  draws <- sample(c(x, l), n,
+                  prob=c(1-p, p), replace = TRUE)
+  sum(draws)
+})
+
+mean(profit < 0)
+```
+
+#### **Question 6a**  
+
+What is the expected value over 1,000 policies?
+
+```{r}
+set.seed(29)    # in R 3.6, set.seed(29, sample.kind="Rounding")
+  
+profit <- replicate(B, {
+    new_p <- p + sample(seq(-0.01, 0.01, length = 100), 1)
+    draws <- sample(c(x, l), n, 
+                    prob=c(1-new_p, new_p), replace = TRUE) 
+    sum(draws)
+})
+mean(profit)
+```
+
+#### **Question 6b**  
+
+What is the probability of losing money?
+
+```{r}
+mean(profit < 0)
+```
+
+#### **Question 6c**  
+
+What is the probability of losing more than $1 million?
+
+```{r}
+mean(profit < -1*10^6)
+```
+

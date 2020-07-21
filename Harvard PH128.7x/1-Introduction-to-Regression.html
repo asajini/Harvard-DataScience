@@ -450,6 +450,105 @@ Teams %&gt;% filter(yearID %in% 1961:2001 ) %&gt;%
 </ul>
 </div>
 </div>
+<div id="assessment-correlation" class="section level3">
+<h3>Assessment: Correlation</h3>
+<div id="question-1-1" class="section level4">
+<h4><strong>Question 1</strong></h4>
+<p>While studying heredity, Francis Galton developed what important statistical concept?</p>
+<ul>
+<li>Standard deviation</li>
+<li>Normal distribution</li>
+<li>Correlation [*]</li>
+<li>Probability</li>
+</ul>
+</div>
+<div id="question-2-1" class="section level4">
+<h4><strong>Question 2</strong></h4>
+<p>The correlation coefficient is a summary of what?</p>
+<ul>
+<li>The trend between two variables [*]</li>
+<li>The dispersion of a variable</li>
+<li>The central tendency of a variable</li>
+<li>The distribution of a variable</li>
+</ul>
+</div>
+<div id="question-3-1" class="section level4">
+<h4><strong>Question 3</strong></h4>
+<p>Below is a scatter plot showing the relationship between two variables, x and y.</p>
+<p>Scatter plot of relationship between x (plotted on the x-axis) and y (plotted on the y-axis). y-axis values range from -3 to 3; x-axis values range from -3 to 3. Points are fairly well distributed in a tight band with a range from approximately (-2, 2) to (3, -3). From this figure, the correlation between x and y appears to be about:</p>
+<ul>
+<li>-0.9 [*]</li>
+<li>-0.2</li>
+<li>0.9</li>
+<li>2</li>
+</ul>
+</div>
+<div id="question-4-1" class="section level4">
+<h4><strong>Question 4</strong></h4>
+<p>Instead of running a Monte Carlo simulation with a sample size of 25 from the 179 father-son pairs described in the videos, we now run our simulation with a sample size of 50.</p>
+<p>Would you expect the expected value of our sample correlation to increase, decrease, or stay approximately the same?</p>
+<ul>
+<li>Increase</li>
+<li>Decrease</li>
+<li>Stay approximately the same [*]</li>
+</ul>
+</div>
+<div id="question-5-1" class="section level4">
+<h4><strong>Question 5</strong></h4>
+<p>Instead of running a Monte Carlo simulation with a sample size of 25 from the 179 father-son pairs described in the videos, we now run our simulation with a sample size of 50.</p>
+<p>Would you expect the standard error of our sample correlation to increase, decrease, or stay approximately the same?</p>
+<ul>
+<li>Increase</li>
+<li>Decrease [*]</li>
+<li>Stay approximately the same</li>
+</ul>
+</div>
+<div id="question-6-1" class="section level4">
+<h4><strong>Question 6</strong></h4>
+<p>If X and Y are completely independent, what do you expect the value of the correlation coefficient to be?</p>
+<ul>
+<li>-1</li>
+<li>-0.5</li>
+<li>0 [*]</li>
+<li>0.5</li>
+<li>1</li>
+<li>Not enough information to answer the question</li>
+</ul>
+</div>
+<div id="question-7-1" class="section level4">
+<h4><strong>Question 7</strong></h4>
+<p>Load the Lahman library. Filter the Teams data frame to include years from 1961 to 2001.</p>
+<p>What is the correlation coefficient between number of runs per game and number of at bats per game?</p>
+<pre class="r"><code>library(Lahman)
+library(dplyr)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;dplyr&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:stats&#39;:
+## 
+##     filter, lag</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     intersect, setdiff, setequal, union</code></pre>
+<pre class="r"><code>library(ggplot2)
+Teams_small &lt;- Teams %&gt;% filter(yearID %in% 1961:2001)
+cor(Teams_small$R/Teams_small$G, Teams_small$AB/Teams_small$G)</code></pre>
+<pre><code>## [1] 0.6580976</code></pre>
+</div>
+<div id="question-8-1" class="section level4">
+<h4><strong>Question 8</strong></h4>
+<p>Use the filtered Teams data frame from Question 7.</p>
+<p>What is the correlation coefficient between win rate (number of wins per game) and number of errors per game?</p>
+<pre class="r"><code>cor(Teams_small$W/Teams_small$G, Teams_small$E/Teams_small$G)</code></pre>
+<pre><code>## [1] -0.3396947</code></pre>
+</div>
+<div id="question-9" class="section level4">
+<h4><strong>Question 9</strong></h4>
+<p>Use the filtered Teams data frame from Question 7.</p>
+<p>What is the correlation coefficient between doubles (X2B) per game and triples (X3B) per game?</p>
+<pre class="r"><code>cor(Teams_small$X2B/Teams_small$G, Teams_small$X3B/Teams_small$G)</code></pre>
+<pre><code>## [1] -0.01157404</code></pre>
+</div>
+</div>
 
 
 

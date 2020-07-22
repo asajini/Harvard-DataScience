@@ -224,3 +224,82 @@ cor(Teams_small$X2B/Teams_small$G, Teams_small$X3B/Teams_small$G)
 - Slope = (correlation coefficient of son and father heights) / (standard deviation of sons’ heights * standard deviation of fathers’ heights)
 - Slope = (mean height of fathers) - (correlation coefficient of son and father heights * mean height of sons).
 
+
+Question 2
+
+Why does the regression line simplify to a line with intercept zero and slope  ρ  when we standardize our x and y variables?
+Try the simplification on your own first!
+
+- When we standardize variables, both x and y will have a mean of one and a standard deviation of zero. When you substitute this into the formula for the regression line, the terms cancel out until we have the following equation:  yi=ρxi .
+- When we standardize variables, both x and y will have a mean of zero and a standard deviation of one. When you substitute this into the formula for the regression line, the terms cancel out until we have the following equation:  yi=ρxi .   [*]
+- When we standardize variables, both x and y will have a mean of zero and a standard deviation of one. When you substitute this into the formula for the regression line, the terms cancel out until we have the following equation:  yi=ρ+xi .
+
+
+Question 3
+
+What is a limitation of calculating conditional means?
+Select ALL that apply.
+
+- Each stratum we condition on (e.g., a specific father’s height) may not have many data points.[*]
+- Because there are limited data points for each stratum, our average values have large standard errors.[*]
+- Conditional means are less stable than a regression line.[*]
+- Conditional means are a useful theoretical tool but cannot be calculated.
+
+
+Question 4
+
+A regression line is the best prediction of Y given we know the value of X when:
+
+- X and Y follow a bivariate normal distribution.[*]
+- Both X and Y are normally distributed.
+- Both X and Y have been standardized.
+- There are at least 25 X-Y pairs.
+
+
+Question 5
+
+Which one of the following scatterplots depicts an x and y distribution that is NOT well-approximated by the bivariate normal distribution?
+
+[*] The v-shaped distribution of points from the first plot means that the x and y variables do not follow a bivariate normal distribution.
+
+When a pair of random variables is approximated by a bivariate normal, the scatter plot looks like an oval (as in the 2nd, 3rd, and 4th plots) - it is okay if the oval is very round (as in the 3rd plot) or long and thin (as in the 4th plot).
+
+
+Question 6
+
+We previously calculated that the correlation coefficient  ρ  between fathers’ and sons’ heights is 0.5.
+
+Given this, what percent of the variation in sons’ heights is explained by fathers’ heights?
+
+- 0%
+- 25%   [*]
+- 50%
+- 75%
+
+
+Question 7
+
+Suppose the correlation between father and son’s height is 0.5, the standard deviation of fathers’ heights is 2 inches, and the standard deviation of sons’ heights is 3 inches.
+
+Given a one inch increase in a father’s height, what is the predicted change in the son’s height?
+
+- 0.333
+- 0.5
+- 0.667
+- 0.75    [*]
+
+
+```{r}
+set.seed(1989, sample.kind="Rounding")
+library(HistData)
+data("GaltonFamilies")
+
+female_heights <- GaltonFamilies%>%    
+    filter(gender == "female") %>%    
+    group_by(family) %>%    
+    sample_n(1) %>%    
+    ungroup() %>%    
+    select(mother, childHeight) %>%    
+    rename(daughter = childHeight)
+```
+

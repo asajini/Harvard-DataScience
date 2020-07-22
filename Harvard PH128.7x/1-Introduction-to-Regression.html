@@ -559,6 +559,64 @@ cor(Teams_small$R/Teams_small$G, Teams_small$AB/Teams_small$G)</code></pre>
 <li>Slope = (correlation coefficient of son and father heights) / (standard deviation of sons’ heights * standard deviation of fathers’ heights)</li>
 <li>Slope = (mean height of fathers) - (correlation coefficient of son and father heights * mean height of sons).</li>
 </ul>
+<p>Question 2</p>
+<p>Why does the regression line simplify to a line with intercept zero and slope ρ when we standardize our x and y variables? Try the simplification on your own first!</p>
+<ul>
+<li>When we standardize variables, both x and y will have a mean of one and a standard deviation of zero. When you substitute this into the formula for the regression line, the terms cancel out until we have the following equation: yi=ρxi .</li>
+<li>When we standardize variables, both x and y will have a mean of zero and a standard deviation of one. When you substitute this into the formula for the regression line, the terms cancel out until we have the following equation: yi=ρxi . [*]</li>
+<li>When we standardize variables, both x and y will have a mean of zero and a standard deviation of one. When you substitute this into the formula for the regression line, the terms cancel out until we have the following equation: yi=ρ+xi .</li>
+</ul>
+<p>Question 3</p>
+<p>What is a limitation of calculating conditional means? Select ALL that apply.</p>
+<ul>
+<li>Each stratum we condition on (e.g., a specific father’s height) may not have many data points.[*]</li>
+<li>Because there are limited data points for each stratum, our average values have large standard errors.[*]</li>
+<li>Conditional means are less stable than a regression line.[*]</li>
+<li>Conditional means are a useful theoretical tool but cannot be calculated.</li>
+</ul>
+<p>Question 4</p>
+<p>A regression line is the best prediction of Y given we know the value of X when:</p>
+<ul>
+<li>X and Y follow a bivariate normal distribution.[*]</li>
+<li>Both X and Y are normally distributed.</li>
+<li>Both X and Y have been standardized.</li>
+<li>There are at least 25 X-Y pairs.</li>
+</ul>
+<p>Question 5</p>
+<p>Which one of the following scatterplots depicts an x and y distribution that is NOT well-approximated by the bivariate normal distribution?</p>
+<p>[*] The v-shaped distribution of points from the first plot means that the x and y variables do not follow a bivariate normal distribution.</p>
+<p>When a pair of random variables is approximated by a bivariate normal, the scatter plot looks like an oval (as in the 2nd, 3rd, and 4th plots) - it is okay if the oval is very round (as in the 3rd plot) or long and thin (as in the 4th plot).</p>
+<p>Question 6</p>
+<p>We previously calculated that the correlation coefficient ρ between fathers’ and sons’ heights is 0.5.</p>
+<p>Given this, what percent of the variation in sons’ heights is explained by fathers’ heights?</p>
+<ul>
+<li>0%</li>
+<li>25% [*]</li>
+<li>50%</li>
+<li>75%</li>
+</ul>
+<p>Question 7</p>
+<p>Suppose the correlation between father and son’s height is 0.5, the standard deviation of fathers’ heights is 2 inches, and the standard deviation of sons’ heights is 3 inches.</p>
+<p>Given a one inch increase in a father’s height, what is the predicted change in the son’s height?</p>
+<ul>
+<li>0.333</li>
+<li>0.5</li>
+<li>0.667</li>
+<li>0.75 [*]</li>
+</ul>
+<pre class="r"><code>set.seed(1989, sample.kind=&quot;Rounding&quot;)</code></pre>
+<pre><code>## Warning in set.seed(1989, sample.kind = &quot;Rounding&quot;): non-uniform &#39;Rounding&#39;
+## sampler used</code></pre>
+<pre class="r"><code>library(HistData)
+data(&quot;GaltonFamilies&quot;)
+
+female_heights &lt;- GaltonFamilies%&gt;%    
+    filter(gender == &quot;female&quot;) %&gt;%    
+    group_by(family) %&gt;%    
+    sample_n(1) %&gt;%    
+    ungroup() %&gt;%    
+    select(mother, childHeight) %&gt;%    
+    rename(daughter = childHeight)</code></pre>
 </div>
 </div>
 

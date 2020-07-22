@@ -214,3 +214,13 @@ What is the correlation coefficient between doubles (X2B) per game and triples (
 cor(Teams_small$X2B/Teams_small$G, Teams_small$X3B/Teams_small$G)
 ```
 
+
+### Assessment: Stratification and Variance Explained, Part 1
+
+#### **Question 1**  
+
+- Slope = (correlation coefficient of son and father heights) * (standard deviation of sons’ heights / standard deviation of fathers’ heights)[*]
+- Slope = (correlation coefficient of son and father heights) * (standard deviation of fathers’ heights / standard deviation of sons’ heights)
+- Slope = (correlation coefficient of son and father heights) / (standard deviation of sons’ heights * standard deviation of fathers’ heights)
+- Slope = (mean height of fathers) - (correlation coefficient of son and father heights * mean height of sons).
+

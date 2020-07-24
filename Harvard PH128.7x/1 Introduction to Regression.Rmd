@@ -9,7 +9,7 @@ weight: 2
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-### Assessment: Baseball as a Motivating Example
+### Assessment: Baseball as a Motivating Example. Linear regression
 
 #### **Question 1**  
 What is the application of statistics and data science to baseball called?

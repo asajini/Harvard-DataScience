@@ -629,7 +629,9 @@ female_heights &lt;- GaltonFamilies%&gt;%
     ungroup() %&gt;%    
     select(mother, childHeight) %&gt;%    
     rename(daughter = childHeight)</code></pre>
-<p>Question 8</p>
+</div>
+<div id="question-8-2" class="section level4">
+<h4><strong>Question 8</strong></h4>
 <p>Calculate the mean and standard deviation of mothers’ heights, the mean and standard deviation of daughters’ heights, and the correlaton coefficient between mother and daughter heights.</p>
 <p>Mean of mothers’ heights</p>
 <pre class="r"><code>mean(female_heights$mother)</code></pre>
@@ -646,6 +648,40 @@ female_heights &lt;- GaltonFamilies%&gt;%
 <p>Correlation coefficient</p>
 <pre class="r"><code>cor(female_heights$mother, female_heights$daughter)</code></pre>
 <pre><code>## [1] 0.3245199</code></pre>
+</div>
+<div id="question-9-1" class="section level4">
+<h4><strong>Question 9</strong></h4>
+<p>Calculate the slope and intercept of the regression line predicting daughters’ heights given mothers’ heights. Given an increase in mother’s height by 1 inch, how many inches is the daughter’s height expected to change?</p>
+<p>Slope of regression line predicting daughters’ height from mothers’ heights</p>
+<pre class="r"><code>r &lt;- cor(female_heights$mother, female_heights$daughter)
+s_y &lt;- sd(female_heights$daughter)
+s_x &lt;- sd(female_heights$mother)
+r * s_y/s_x</code></pre>
+<pre><code>## [1] 0.3393856</code></pre>
+<p>Intercept of regression line predicting daughters’ height from mothers’ heights</p>
+<pre class="r"><code>mu_y &lt;- mean(female_heights$daughter)
+mu_x &lt;- mean(female_heights$mother)
+mu_y - (r * s_y/s_x)*mu_x</code></pre>
+<pre><code>## [1] 42.51701</code></pre>
+<p>Change in daughter’s height in inches given a 1 inch increase in the mother’s height</p>
+<pre class="r"><code>r * s_y/s_x</code></pre>
+<pre><code>## [1] 0.3393856</code></pre>
+</div>
+<div id="question-10" class="section level4">
+<h4><strong>Question 10</strong></h4>
+<p>What percent of the variability in daughter heights is explained by the mother’s height?</p>
+<pre class="r"><code>r^2*100</code></pre>
+<pre><code>## [1] 10.53132</code></pre>
+</div>
+<div id="question-11" class="section level4">
+<h4><strong>Question 11</strong></h4>
+<p>A mother has a height of 60 inches.</p>
+<p>What is the conditional expected value of her daughter’s height given the mother’s height?</p>
+<pre class="r"><code>m = r * s_y/s_x
+b = mu_y - (r * s_y/s_x)*mu_x
+x = 60
+m*x+b</code></pre>
+<pre><code>## [1] 62.88015</code></pre>
 </div>
 </div>
 

@@ -304,7 +304,7 @@ female_heights <- GaltonFamilies%>%
 ```
 
 
-Question 8
+#### **Question 8**  
 
 Calculate the mean and standard deviation of mothers' heights, the mean and standard deviation of daughters' heights, and the correlaton coefficient between mother and daughter heights.
 
@@ -341,7 +341,7 @@ cor(female_heights$mother, female_heights$daughter)
 ```
 
 
-Question 9
+#### **Question 9**  
 
 Calculate the slope and intercept of the regression line predicting daughters' heights given mothers' heights. Given an increase in mother's height by 1 inch, how many inches is the daughter's height expected to change?
 
@@ -366,5 +366,28 @@ Change in daughter's height in inches given a 1 inch increase in the mother's he
 
 ```{r}
 r * s_y/s_x
+```
+
+
+#### **Question 10**  
+
+What percent of the variability in daughter heights is explained by the mother's height?
+
+```{r}
+r^2*100
+```
+
+
+#### **Question 11**  
+
+A mother has a height of 60 inches.
+
+What is the conditional expected value of her daughter's height given the mother's height?
+
+```{r}
+m = r * s_y/s_x
+b = mu_y - (r * s_y/s_x)*mu_x
+x = 60
+m*x+b
 ```
 

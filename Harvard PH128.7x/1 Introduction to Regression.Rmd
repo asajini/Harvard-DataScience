@@ -225,7 +225,7 @@ cor(Teams_small$X2B/Teams_small$G, Teams_small$X3B/Teams_small$G)
 - Slope = (mean height of fathers) - (correlation coefficient of son and father heights * mean height of sons).
 
 
-Question 2
+#### **Question 2**  
 
 Why does the regression line simplify to a line with intercept zero and slope  ρ  when we standardize our x and y variables?
 Try the simplification on your own first!
@@ -235,7 +235,7 @@ Try the simplification on your own first!
 - When we standardize variables, both x and y will have a mean of zero and a standard deviation of one. When you substitute this into the formula for the regression line, the terms cancel out until we have the following equation:  yi=ρ+xi .
 
 
-Question 3
+#### **Question 3**  
 
 What is a limitation of calculating conditional means?
 Select ALL that apply.
@@ -246,7 +246,7 @@ Select ALL that apply.
 - Conditional means are a useful theoretical tool but cannot be calculated.
 
 
-Question 4
+#### **Question 4**  
 
 A regression line is the best prediction of Y given we know the value of X when:
 
@@ -256,7 +256,7 @@ A regression line is the best prediction of Y given we know the value of X when:
 - There are at least 25 X-Y pairs.
 
 
-Question 5
+#### **Question 5**  
 
 Which one of the following scatterplots depicts an x and y distribution that is NOT well-approximated by the bivariate normal distribution?
 
@@ -265,7 +265,7 @@ Which one of the following scatterplots depicts an x and y distribution that is 
 When a pair of random variables is approximated by a bivariate normal, the scatter plot looks like an oval (as in the 2nd, 3rd, and 4th plots) - it is okay if the oval is very round (as in the 3rd plot) or long and thin (as in the 4th plot).
 
 
-Question 6
+#### **Question 6**  
 
 We previously calculated that the correlation coefficient  ρ  between fathers’ and sons’ heights is 0.5.
 
@@ -277,7 +277,7 @@ Given this, what percent of the variation in sons’ heights is explained by fat
 - 75%
 
 
-Question 7
+#### **Question 7**  
 
 Suppose the correlation between father and son’s height is 0.5, the standard deviation of fathers’ heights is 2 inches, and the standard deviation of sons’ heights is 3 inches.
 
@@ -301,5 +301,70 @@ female_heights <- GaltonFamilies%>%
     ungroup() %>%    
     select(mother, childHeight) %>%    
     rename(daughter = childHeight)
+```
+
+
+Question 8
+
+Calculate the mean and standard deviation of mothers' heights, the mean and standard deviation of daughters' heights, and the correlaton coefficient between mother and daughter heights.
+
+Mean of mothers' heights
+
+```{r}
+mean(female_heights$mother)
+```
+
+Standard deviation of mothers' heights
+
+```{r}
+sd(female_heights$mother)
+```
+
+
+Mean of daughters' heights
+
+```{r}
+mean(female_heights$daughter)
+```
+
+Standard deviation of daughters' heights
+
+```{r}
+sd(female_heights$daughter)
+```
+
+
+Correlation coefficient
+
+```{r}
+cor(female_heights$mother, female_heights$daughter)
+```
+
+
+Question 9
+
+Calculate the slope and intercept of the regression line predicting daughters' heights given mothers' heights. Given an increase in mother's height by 1 inch, how many inches is the daughter's height expected to change?
+
+Slope of regression line predicting daughters' height from mothers' heights
+
+```{r}
+r <- cor(female_heights$mother, female_heights$daughter)
+s_y <- sd(female_heights$daughter)
+s_x <- sd(female_heights$mother)
+r * s_y/s_x
+```
+
+Intercept of regression line predicting daughters' height from mothers' heights
+
+```{r}
+mu_y <- mean(female_heights$daughter)
+mu_x <- mean(female_heights$mother)
+mu_y - (r * s_y/s_x)*mu_x
+```
+
+Change in daughter's height in inches given a 1 inch increase in the mother's height
+
+```{r}
+r * s_y/s_x
 ```
 

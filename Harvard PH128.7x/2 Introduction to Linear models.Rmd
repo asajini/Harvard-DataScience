@@ -1,0 +1,48 @@
+---
+title: "2 - Linear Models"
+author: "Sajini Arumugam"
+output: html_document
+weight : 2
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Question 1
+
+Why is the number of home runs considered a confounder of the relationship between bases on balls and runs per game?
+- Home runs is not a confounder of this relationship.
+- Home runs are the primary cause of runs per game.
+- The correlation between home runs and runs per game is stronger than the correlation between bases on balls and runs per game.
+- Players who get more bases on balls also tend to have more home runs; in addition, home runs increase the points per game.    [*]
+
+
+Question 2
+
+As described in the videos, when we stratified our regression lines for runs per game vs. bases on balls by the number of home runs, what happened?
+- The slope of runs per game vs. bases on balls within each stratum was reduced because we removed confounding by home runs.   [*]
+- The slope of runs per game vs. bases on balls within each stratum was reduced because there were fewer data points.
+- The slope of runs per game vs. bases on balls within each stratum increased after we removed confounding by home runs.
+- The slope of runs per game vs. bases on balls within each stratum stayed about the same as the original slope.
+
+
+Question 3
+
+We run a linear model for sons’ heights vs. fathers’ heights using the Galton height data, and get the following results:
+
+```
+ > lm(son ~ father, data = galton_heights)
+
+Call:
+lm(formula = son ~ father, data = galton_heights)
+
+Coefficients:
+(Intercept)    father  
+    35.71       0.50  
+```
+
+Interpret the numeric coefficient for "father."
+- For every inch we increase the son’s height, the predicted father’s height increases by 0.5 inches.
+- For every inch we increase the father’s height, the predicted son’s height grows by 0.5 inches.   [*]
+- For every inch we increase the father’s height, the predicted son’s height is 0.5 times greater.

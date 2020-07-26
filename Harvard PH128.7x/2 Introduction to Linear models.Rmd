@@ -73,3 +73,15 @@ Interpret the numeric coefficient for the intercept.
 - The height of a son when a father’s height is zero is 70.45 inches.
 - The height of an average father is 70.45 inches.
 
+
+Question 5
+
+Suppose we fit a multivariate regression model for expected runs based on BB and HR:
+
+E[R|BB=x1,HR=x2]=β0+β1x1+β2x2 
+- β0 
+- β0+β2x2 
+- β0+β1x1 [*]
+- β0+β2x1Suppose we fix  BB=x1 . Then we observe a linear relationship between runs and HR with intercept of:
+
+

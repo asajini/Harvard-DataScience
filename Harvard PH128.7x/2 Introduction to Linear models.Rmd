@@ -46,3 +46,30 @@ Interpret the numeric coefficient for "father."
 - For every inch we increase the son’s height, the predicted father’s height increases by 0.5 inches.
 - For every inch we increase the father’s height, the predicted son’s height grows by 0.5 inches.   [*]
 - For every inch we increase the father’s height, the predicted son’s height is 0.5 times greater.
+
+Question 4
+
+We want the intercept term for our model to be more interpretable, so we run the same model as before but now we subtract the mean of fathers’ heights from each individual father’s height to create a new variable centered at zero.
+
+```
+galton_heights <- galton_heights %>%
+    mutate(father_centered=father - mean(father))
+```
+
+We run a linear model using this centered fathers’ height variable.
+
+
+> lm(son ~ father_centered, data = galton_heights)
+
+Call:
+lm(formula = son ~ father_centered, data = galton_heights)
+
+Coefficients:
+(Intercept)    father_centered  
+    70.45          0.50  
+    
+Interpret the numeric coefficient for the intercept.
+- The height of a son of a father of average height is 70.45 inches.   [*]
+- The height of a son when a father’s height is zero is 70.45 inches.
+- The height of an average father is 70.45 inches.
+

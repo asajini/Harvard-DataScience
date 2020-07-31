@@ -356,3 +356,123 @@ fit_bb <- lm(bb ~ mean_bb, data = dat)
 fit_bb$coef[2]
 ```
 
+***
+
+Assessment: Tibbles, do, and broom, part 1
+
+Question 1
+
+As seen in the videos, what problem do we encounter when we try to run a linear model on our baseball data, grouping by home runs?
+- There is not enough data in some levels to run the model.
+- The lm function does not know how to handle grouped tibbles.    [*]
+- The results of the lm function cannot be put into a tidy format.
+
+
+Question 2
+
+Tibbles are similar to what other class in R?
+Vectors
+Matrices
+Data frames   [*]
+Lists
+
+
+Question 3
+
+What are some advantages of tibbles compared to data frames?
+Select ALL that apply.
+
+Tibbles display better.
+If you subset a tibble, you always get back a tibble.
+Tibbles can have complex entries.
+Tibbles can be grouped.
+[all of the above]
+
+
+Question 4
+
+What are two advantages of the do command, when applied to the tidyverse?
+Select TWO.
+
+It is faster than normal functions.
+It returns useful error messages.
+It understands grouped tibbles.   [*]
+It always returns a data.frame.   [*]
+
+
+Question 5
+
+You want to take the tibble dat, which we used in the video on the do function, and run the linear model R ~ BB for each strata of HR. Then you want to add three new columns to your grouped tibble: the coefficient, standard error, and p-value for the BB term in the model.
+
+You’ve already written the function get_slope, shown below.
+
+```
+get_slope <- function(data) {
+  fit <- lm(R ~ BB, data = data)
+  sum.fit <- summary(fit)
+
+  data.frame(slope = sum.fit$coefficients[2, "Estimate"], 
+             se = sum.fit$coefficients[2, "Std. Error"],
+             pvalue = sum.fit$coefficients[2, "Pr(>|t|)"])
+}
+```
+What additional code could you write to accomplish your goal?
+
+```
+dat %>% 
+  group_by(HR) %>% 
+  do(get_slope(.))
+```
+
+Question 6
+
+The output of a broom function is always what?
+
+A data.frame    [*]
+A list
+A vector
+
+
+Question 7
+
+You want to know whether the relationship between home runs and runs per game varies by baseball league. You create the following dataset:
+
+```
+dat <- Teams %>% filter(yearID %in% 1961:2001) %>%
+  mutate(HR = HR/G,
+         R = R/G) %>%
+  select(lgID, HR, BB, R) 
+```
+What code would help you quickly answer this question?
+
+```
+dat %>% 
+  group_by(lgID) %>% 
+  do(tidy(lm(R ~ HR, data = .), conf.int = T)) %>% 
+  filter(term == "HR") 
+```
+
+
+We have investigated the relationship between fathers' heights and sons' heights. But what about other parent-child relationships? Does one parent's height have a stronger association with child height? How does the child's gender affect this relationship in heights? Are any differences that we observe statistically significant?
+
+The galton dataset is a sample of one male and one female child from each family in the GaltonFamilies dataset. The pair column denotes whether the pair is father and daughter, father and son, mother and daughter, or mother and son.
+
+Create the galton dataset using the code below:
+
+```{r}
+library(tidyverse)
+library(HistData)
+data("GaltonFamilies")
+set.seed(1, sample.kind = "Rounding") 
+galton <- GaltonFamilies %>%
+    group_by(family, gender) %>%
+    sample_n(1) %>%
+    ungroup() %>% 
+    gather(parent, parentHeight, father:mother) %>%
+    mutate(child = ifelse(gender == "female", "daughter", "son")) %>%
+    unite(pair, c("parent", "child"))
+
+galton
+```
+
+

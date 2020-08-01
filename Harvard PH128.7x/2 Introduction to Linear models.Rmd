@@ -475,4 +475,8 @@ galton <- GaltonFamilies %>%
 galton
 ```
 
+Question 8
 
+Group by pair and summarize the number of observations in each group.
+
+How many father-daughter pairs are in the dataset?
